@@ -31,27 +31,13 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-open class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
+open class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLoadedCallback {
 
     private val TAG = "MapsActivity"
 
     var mMap: GoogleMap? = null
     private var db: LocationDatabase? = null
 
-    override fun onResume() {
-        super.onResume()
-        if (mMap != null) {
-            val locationData: ArrayList<LocationDataDouble> = ArrayList()
-            locationData.add(LocationDataDouble(27.6715873, 85.2810544))
-            locationData.add(LocationDataDouble(27.6718805, 85.2808137))
-            locationData.add(LocationDataDouble(27.6710213, 85.2800275))
-            locationData.add(LocationDataDouble(27.6703382, 85.2796617))
-
-            for (locationDatum in locationData) {
-                createMarker(locationDatum.latitude, locationDatum.longitude)
-            }
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,29 +48,29 @@ open class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
 
 
-        val locationUtils =
-            LocationUtils(this@MapsActivity, object : LocationUtils.OnLocationUpdateListener {
-                override fun onUpdate(latitude: Double, longitude: Double) {
-                    createMarker(latitude, longitude)
-
-
-                    Toast.makeText(
-                        applicationContext,
-                        "" + latitude + "-- " + longitude,
-                        Toast.LENGTH_LONG
-                    ).show()
-
-                    mMap?.animateCamera(
-                        CameraUpdateFactory.newLatLngZoom(
-                            LatLng(
-                                latitude, longitude
-                            ), 12.0f
-                        )
-                    )
-
-                }
-            })
-        locationUtils.getLastLocation()
+//        val locationUtils =
+//            LocationUtils(this@MapsActivity, object : LocationUtils.OnLocationUpdateListener {
+//                override fun onUpdate(latitude: Double, longitude: Double) {
+//                    //createMarker(latitude, longitude)
+//
+//
+//                    Toast.makeText(
+//                        applicationContext,
+//                        "" + latitude + "-- " + longitude,
+//                        Toast.LENGTH_LONG
+//                    ).show()
+//
+//                    mMap?.animateCamera(
+//                        CameraUpdateFactory.newLatLngZoom(
+//                            LatLng(
+//                                latitude, longitude
+//                            ), 12.0f
+//                        )
+//                    )
+//
+//                }
+//            })
+//        locationUtils.getLastLocation()
     }
 
     private fun createMarker(latitude: Double, longitude: Double): Marker {
@@ -122,7 +108,12 @@ open class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      * installed Google Play services and returned to the app.
      */
     override fun onMapReady(googleMap: GoogleMap) {
+
+        Log.i(TAG, "onMapReady")
+
+
         mMap = googleMap
+
 
         updateLocationUI()
 
@@ -130,11 +121,13 @@ open class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
 //        val locationData = getDataFromDb()
 
-        val locationData: ArrayList<LocationData> = ArrayList<LocationData>();
-        locationData.add(LocationData("27.6715873", "85.2810544"));
-        locationData.add(LocationData("27.6718805", "85.2808137"));
-        locationData.add(LocationData("27.6710213", "85.2800275"));
-        locationData.add(LocationData("27.6703382", "85.2796617"));
+        val locationData: ArrayList<LocationData> = ArrayList();
+
+        locationData.add(LocationData("27.6757747","85.2756031"));
+        locationData.add(LocationData("27.6763222","85.2756858"));
+        locationData.add(LocationData("27.6757912","85.2760778"));
+        locationData.add(LocationData("27.6755202","85.2762818"));
+        locationData.add(LocationData("27.6751332","85.2765658"));
 
         if (locationData != null) {
 
@@ -180,22 +173,22 @@ open class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             val myRef = database.getReference("users")
 
 
-            /*// Read from the database
-            myRef.addValueEventListener(object : ValueEventListener {
-                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-                     // This method is called once with the initial value and again
-                     // whenever data at this location is updated.
- //                    val value =
- //                        dataSnapshot.getValue(String::class.java)!!
- //                    Log.d(TAG, "Value is: $value")
-                 }
+        /*// Read from the database
+        myRef.addValueEventListener(object : ValueEventListener {
+             override fun onDataChange(dataSnapshot: DataSnapshot) {
+                 // This method is called once with the initial value and again
+                 // whenever data at this location is updated.
+//                    val value =
+//                        dataSnapshot.getValue(String::class.java)!!
+//                    Log.d(TAG, "Value is: $value")
+             }
 
-                 override fun onCancelled(error: DatabaseError) {
-                     // Failed to read value
-                     Log.w(TAG, "Failed to read value.", error.toException())
-                 }
-             })
-             */
+             override fun onCancelled(error: DatabaseError) {
+                 // Failed to read value
+                 Log.w(TAG, "Failed to read value.", error.toException())
+             }
+         })
+         */
 
 
         }
@@ -258,13 +251,14 @@ open class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     internal class LocationData(
-        var longitude: String,
-        var latitude: String
+        var latitude: String,
+        var longitude: String
     )
 
     internal class LocationDataDouble(
-        var longitude: Double,
-        var latitude: Double
+        var latitude: Double,
+        var longitude: Double
+
     )
 
 
@@ -419,6 +413,13 @@ open class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Building the url to the web service
         return "https://maps.googleapis.com/maps/api/directions/$output?$parameters"
+    }
+
+    override fun onMapLoaded() {
+
+        Log.i(TAG, "onMapLoaded")
+
+
     }
 
 

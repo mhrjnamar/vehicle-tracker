@@ -36,7 +36,12 @@
 
         <activity
                 android:name=".ui.MapsActivity"
-                android:label="@string/title_activity_maps" />
+                android:label="@string/title_activity_maps" >
+
+
+
+        </activity>
+
         <activity android:name=".ui.MainActivity" />
 
         <receiver
